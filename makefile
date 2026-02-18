@@ -1,13 +1,14 @@
 elf-gas:
 	riscv-none-elf-gcc -T link.ld -static -march=rv32ec_zicsr -mabi=ilp32e -nostdlib -nostartfiles -ggdb FORTH.S -o FORTH.elf
 	riscv-none-elf-objdump -d FORTH.elf > FORTH.dis
+	riscv-none-elf-objcopy -O ihex FORTH.elf FORTH.hex
 	riscv-none-elf-size FORTH.elf
 
 ocd:
 	openocd-wch -f wch-riscv.cfg
 
-db: elf
-	gdb
+db:
+	riscv-none-elf-gdb
 
 flash: swd-flash
 

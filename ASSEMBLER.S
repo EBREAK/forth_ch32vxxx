@@ -270,7 +270,37 @@
 
 	DFW ASM_DIS_CJ_TYPE, "DIS-CJ-TYPE"
 	# ( INST16 -- OFFSET FUNCT3+OPCODE )
-	
+	andi x14, x15, 0x4
+	slli x14, x14, 3
+	andi x13, x15, 0b111000
+	srli x13, x13, 2
+	or x14, x14, x13
+	andi x13, x15, 0x40
+	slli x13, x13, 1
+	or x14, x14, x13
+	andi x13, x15, 0x80
+	srli x13, x13, 1
+	or x14, x14, x13
+	andi x13, x15, 0x100
+	slli x13, x13, 2
+	or x14, x14, x13
+	andi x13, x15, 0x600
+	srli x13, x13, 1
+	or x14, x14, x13
+	srli x13, x15, 7
+	andi x13, x13, 0x10
+	or x14, x14, x13
+	srli x13, x15, 1
+	li x12, 0b100000000000
+	and x13, x13, x12
+	beqz x13, 1f
+	li x13, 0xFFFFF800
+1:
+	or x14, x14, x13
+	li x13, 0xE003;
+	and x15, x15, x13;
+	addi x9, x9, -4
+	sw x14, 0(x9)
 	ret
 	ENDW ASM_DIS_CJ_TYPE
 
