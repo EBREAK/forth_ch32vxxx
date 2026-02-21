@@ -304,6 +304,140 @@
 	ret
 	ENDW ASM_DIS_CJ_TYPE
 
+	DFW ASM_CI_TYPE, "CI-TYPE"
+	# ( IMM RS1/RD FUNCT3+OPCODE -- INST16 )
+	lw x14, 0(x9)
+	lw x13, 4(x9)
+	addi x9, x9, 8
+	slli x14, x14, 7
+	or x15, x15, x14
+	andi x12, x13, 0x1F
+	slli x12, x12, 2
+	or x15, x15, x12
+	andi x12, x13, 0x20
+	slli x12, x12, 7
+	or x15, x15, x12
+	ret
+	ENDW ASM_CI_TYPE
+
+	DFW ASM_DIS_CI_TYPE, "DIS-CI-TYPE"
+	# ( INST16 -- IMM RS1/RD FUNCT3+OPCODE )
+	srli x14, x15, 7
+	andi x14, x14, 0x1F
+	srli x13, x15, 2
+	andi x13, x13, 0x1F
+	srli x12, x15, 7
+	andi x12, x12, (1 << 5)
+	beqz x12, 1f
+	li x12, 0xFFFFFFE0
+1:
+	or x13, x13, x12
+	li x12, 0xE003
+	and x15, x15, x12
+	addi x9, x9, -8
+	sw x14, 0(x9)
+	sw x13, 4(x9)
+	ret
+	ENDW ASM_DIS_CI_TYPE
+
+	DFW ASM_CB_TYPE, "CB-TYPE"
+	# ( OFFSET RS1 FUNCT3+OPCODE -- INST16 )
+	lw x14, 0(x9)
+	lw x13, 4(x9)
+	addi x9, x9, 8
+	addi x14, x14, -8
+	slli x14, x14, 7
+	or x15, x15, x14
+	srli x12, x13, 3
+	andi x12, x12, 0x4
+	or x15, x15, x12
+	andi x12, x13, 0x6
+	slli x12, x12, 2
+	or x15, x15, x12
+	andi x12, x13, (3 << 6)
+	srli x12, x12, 1
+	or x15, x15, x12
+	andi x12, x13, (3 << 3)
+	slli x12, x12, 7
+	or x15, x15, x12
+	andi x12, x13, (1 << 8)
+	slli x12, x12, 4
+	or x15, x15, x12
+	ret
+	ENDW ASM_CB_TYPE
+
+	DFW ASM_DIS_CB_TYPE, "DIS-CB-TYPE"
+	# ( INST16 -- OFFSET RS1 FUNCT3+OPCODE )
+	srli x14, x15, 7
+	andi x14, x14, 0x7
+	addi x14, x14, 0x8
+	andi x13, x15, 0x4
+	slli x13, x13, 3
+	andi x12, x15, (3 << 3)
+	srli x12, x12, 2
+	or x13, x13, x12
+	andi x12, x15, (3 << 5)
+	slli x12, x12, 1
+	or x13, x13, x12
+	srli x12, x15, 7
+	andi x12, x12, (3 << 3)
+	or x13, x13, x12
+	srli x12, x15, 4
+	andi x12, x12, (1 << 8)
+	beqz x12, 1f
+	li x12, 0xFFFFFF00
+1:
+	or x13, x13, x12
+	li x12, 0xE003
+	and x15, x15, x12
+	addi x9, x9, -8
+	sw x14, 0(x9)
+	sw x13, 4(x9)
+	ret
+	ENDW ASM_DIS_CB_TYPE
+
+	DFW ASM_CR_TYPE, "CR-TYPE"
+	# ( RD/RS1 RS2 FUNCT4+OPCODE -- INST16 )
+	lw x14, 0(x9)
+	lw x13, 4(x9)
+	addi x9, x9, 8
+	slli x14, x14, 2
+	or x15, x15, x14
+	slli x13, x13, 7
+	or x15, x15, x13
+	ret
+	ENDW ASM_CR_TYPE
+
+	DFW ASM_DIS_CR_TYPE, "DIS-CR-TYPE"
+	# ( INST16 -- RS/RS1 RS2 FUNCT4+OPCODE )
+	srli x14, x15, 2
+	andi x14, x14, 0x1F
+	srli x13, x15, 7
+	andi x13, x13, 0x1F
+	li x12, 0xF003;
+	and x15, x15, x12
+	addi x9, x9, -8
+	sw x14, 0(x9)
+	sw x13, 4(x9)
+	ret
+	ENDW ASM_DIS_CR_TYPE
+
+	DFW ASM_CJ, "C.J,"
+	# ( OFFSET -- )
+	RPUSH x1
+	LIT (0b101 << 13) | (0b01); NC W_ASM_CJ_TYPE; NC W_WCOMMA;
+	RPOP x1
+	ret
+	ENDW ASM_CJ
+
+	DFW ASM_CJAL, "C.JAL,"
+	# ( OFFSET -- )
+	RPUSH x1
+	LIT (0b001 << 13) | (0b01); NC W_ASM_CJ_TYPE; NC W_WCOMMA;
+	RPOP x1
+	ret
+	ENDW ASM_CJAL
+
 	DFW ASM_JAL, "JAL,"
 	# ( OFFSET RD -- )
 	RPUSH x1
@@ -360,3 +494,4 @@
 	RPOP x1
 	ret
 	ENDW ASM_BEQ
+
