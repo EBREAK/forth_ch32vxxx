@@ -422,6 +422,55 @@
 	ret
 	ENDW ASM_DIS_CR_TYPE
 
+	DFW ASM_CLSW_TYPE, "CLSW-TYPE"
+	# ( UOFFSET RS1 RS2/RD FUNCT3+OPCODE -- INST16 )
+	lw x14, 0(x9)
+	lw x13, 4(x9)
+	lw x12, 8(x9)
+	addi x9, x9, 12
+	addi x14, x14, -8
+	slli x14, x14, 2
+	or x15, x15, x14
+	addi x13, x13, -8
+	slli x13, x13, 7
+	or x15, x15, x13
+	andi x11, x12, (1 << 2)
+	slli x11, x11, 4
+	or x15, x15, x11
+	andi x11, x12, (1 << 6)
+	srli x11, x11, 1
+	or x15, x15, x11
+	andi x11, x12, (0b111 << 3)
+	slli x11, x11, 7
+	or x15, x15, x11
+	ret
+	ENDW ASM_CLSW_TYPE
+
+	DFW ASM_DIS_CLSW_TYPE, "DIS-CLSW-TYPE"
+	# ( INST16 -- UOFFSET RS1 RS2/RD FUNCT3+OPCODE )
+	srli x14, x15, 2
+	andi x14, x14, 0x7
+	addi x14, x14, 0x8
+	srli x13, x15, 7
+	andi x13, x13, 0x7
+	addi x13, x13, 0x8
+	srli x12, x15, 4
+	andi x12, x12, (1 << 2)
+	slli x11, x15, 1
+	andi x11, x11, (1 << 6)
+	or x12, x12, x11
+	srli x11, x15, 7
+	andi x11, x11, (7 << 3)
+	or x12, x12, x11
+	li x11, (0x7 << 13) | 0x3
+	and x15, x15, x11
+	addi x9, x9, -12
+	sw x14, 0(x9)
+	sw x13, 4(x9)
+	sw x12, 8(x9)
+	ret
+	ENDW ASM_DIS_CLSW_TYPE
+
 	DFW ASM_CJ, "C.J,"
 	# ( OFFSET -- )
 	RPUSH x1
@@ -438,13 +487,47 @@
 	ret
 	ENDW ASM_CJAL
 
+	DFW ISCREG, "CREG?"
+	mv x14, x15
+	li x15, FALSE
+	li x13, 0x7
+	bgt x14, x13, 1f
+	ret
+1:
+	li x13, 0x10
+	blt x14, x13, 1f
+	ret
+1:
+	li x15, TRUE
+	ret
+	ENDW ISCREG
+
 	DFW ASM_JAL, "JAL,"
 	# ( OFFSET RD -- )
 	RPUSH x1
+	NC W_2DUP; NC W_0X1; NC W_EQ;
+	NC W_SWAP; NC W_ABS; LIT 0X7FF; NC W_LT;
+	NC W_AND; ZBRANCH 1f
+	NC W_DROP; NC W_ASM_CJAL
+	j 2f
+1:
 	LIT 0x6F; NC W_ASM_J_TYPE; NC W_LCOMMA;
+2:
 	RPOP x1
 	ret
 	ENDW ASM_JAL
+
+	DFW ASM_J, "J,"
+	# ( OFFSET -- )
+	RPUSH x1
+	NC W_DUP; NC W_ABS; LIT 0x7FF; NC W_LT; ZBRANCH 1f
+	NC W_ASM_CJ; j 2f
+1:
+	NC W_0X0; NC W_ASM_JAL;
+2:
+	RPOP x1
+	ret
+	ENDW ASM_J
 
 	DFW ASM_LUI, "LUI,"
 	# ( VAL RD -- )
@@ -455,6 +538,22 @@
 	ret
 	ENDW ASM_LUI
 
+	DFW ASM_CJALR, "C.JALR,"
+	# ( RS1 -- )
+	RPUSH x1
+	NC W_0X0; LIT 0b1001000000000010; NC W_ASM_CR_TYPE; NC W_WCOMMA;
+	RPOP x1
+	ret
+	ENDW ASM_CJALR
+
+	DFW ASM_CJR, "C.JR,"
+	# ( RS1 -- )
+	RPUSH x1
+	NC W_0X0; LIT 0b1000000000000010; NC W_ASM_CR_TYPE; NC W_WCOMMA;
+	RPOP x1
+	ret
+	ENDW ASM_CJR
+
 	DFW ASM_JALR, "JALR,"
 	# ( OFFSET RS1 RD  -- )
 	RPUSH x1
@@ -463,13 +562,44 @@
 	ret
 	ENDW ASM_JALR
 
+	DFW ASM_RET, "RET,"
+	# ( -- )
+	RPUSH x1
+	NC W_0X1; NC W_ASM_CJR;
+	RPOP x1
+	ret
+	ENDW ASM_RET
+
+	DFW ASM_CADDI, "C.ADDI,"
+	# ( IMM RS1/RD -- )
+	RPUSH x1
+	LIT 0b01; NC W_ASM_CI_TYPE; NC W_WCOMMA;
+	RPOP x1
+	ret
+	ENDW ASM_CADDI
+
 	DFW ASM_ADDI, "ADDI,"
 	# ( VAL RS1 RD -- )
 	RPUSH x1
+	NC W_2DUP; NC W_EQ; ZBRANCH 1f
+	NC W_TOR; NC W_OVER; NC W_FROMR; NC W_SWAP; NC W_ABS;
+	LIT 0x20; NC W_LT; ZBRANCH 1f
+	NC W_DROP; NC W_ASM_CADDI; j 2f
+1:
 	LIT 0x13; NC W_ASM_I_TYPE; NC W_LCOMMA;
+2:
 	RPOP x1
 	ret
 	ENDW ASM_ADDI
+
+	DFW ASM_CSW, "C.SW,"
+	# ( UOFFSET SRC BASE -- )
+	RPUSH x1
+	NC W_SWAP; LIT (0b110 << 13) | (0b00);
+	NC W_ASM_CLSW_TYPE; NC W_WCOMMA;
+	RPOP x1
+	ret
+	ENDW ASM_CSW
 
 	DFW ASM_SW, "SW,"
 	# ( OFFSET SRC BASE -- )

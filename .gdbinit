@@ -1,5 +1,5 @@
 define launch
-shell mingw32-make
+shell make
 target remote 127.0.0.1:3333
 file forth.elf
 monitor reset init
