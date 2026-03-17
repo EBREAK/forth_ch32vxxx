@@ -88,9 +88,20 @@
 	.ENDM
 
 	.MACRO DEFCONST LABEL, VALUE
-		.SET \LABEL, \VALUE
-		DFW \LABEL, "\LABEL"
-			LIT \VALUE
-			ret
-		ENDW \LABEL
-	.ENDM
+		.set \LABEL, \VALUE
+                .section .text.const
+                .P2ALIGN 1, 0
+        NAME_\LABEL:
+                .ASCII "\LABEL"
+                .SET NLEN_\LABEL, . - NAME_\LABEL
+                .P2ALIGN 1, 0
+                .BYTE NLEN_\LABEL
+                .BYTE BLEN_\LABEL
+                .SET PREV_\LABEL, W_LASTWORD
+                .4BYTE PREV_\LABEL
+        W_\LABEL:
+                .SET W_LASTWORD, W_\LABEL
+		LIT \VALUE
+		ret
+		.SET BLEN_\LABEL, (. - W_\LABEL) / 2
+        .ENDM
