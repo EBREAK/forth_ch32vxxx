@@ -354,6 +354,24 @@ USER_LATEST:
 	ret
 	ENDW THEN
 
+	IDFW PAREN, "("
+	# ( -- )
+	RPUSH x1
+1:
+	NC W_KEY; LIT ')'; NC W_EQ; ZBRANCH 1b
+	RPOP x1
+	ret
+	ENDW PAREN
+
+	IDFW BACKSLASH, "\\"
+	# ( -- )
+	RPUSH x1
+1:
+	NC W_KEY; NC W_DUP; LIT '\n'; NC W_EQ; NC W_SWAP; LIT '\r'; NC W_EQ; NC W_OR; ZBRANCH 1b
+	RPOP x1
+	ret
+	ENDW BACKSLASH
+
 	.section .rodata
 MSG_NOT_FOUND:
 	.ASCII " NOT FOUND\r\n"
