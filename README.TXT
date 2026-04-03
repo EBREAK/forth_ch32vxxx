@@ -15,3 +15,13 @@ https://ebreak.github.io/MAKE-RISCV-STC-FORTH-SMALL.html
 https://ebreak.github.io/RISCV-CALL-OPTIMIZE.html
 https://ebreak.github.io/WRITE-A-RISCV-ASSEMBLER.html
 
+CONNECT:
+
+UART TX PIN:  PA9
+UART RX PIN:  PA10
+UART RTS PIN: PA12
+
+I MAKE A CORRECT UART HARDWARE FLOW CONTROL TIMING USB TO SERIAL FIRMWARE FOR CH582:
+
+http://github.com/ebreak/ch582-usb-bridge
+
