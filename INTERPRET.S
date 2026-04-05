@@ -401,6 +401,11 @@ USER_LATEST:
 	ret
 	ENDW VARIABLE
 
+	DFW FENCE_I, "FENCE.I"
+	fence.i
+	ret
+	ENDW FENCE_I
+
 	.section .rodata
 MSG_NOT_FOUND:
 	.ASCII " NOT FOUND\r\n"
