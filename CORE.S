@@ -266,6 +266,23 @@
 	ret
 	ENDW RSHIFT
 
+	DFW SWMULTI, "SW*"
+	# FROM LIBGCC
+	mv x14, x15
+	lw x13, 0(x9)
+	addi x9, x9, 4
+	li x15, 0
+1:
+	andi x12, x13, 1
+	beqz x12, 2f
+	add x15, x15, x14
+2:
+	srli x13, x13, 1
+	slli x14, x14, 1
+	bnez x13, 1b
+	ret
+	ENDW SWMULTI
+
 	DFW 2MULTI, "2*"
 	slli x15, x15, 1
 	ret
