@@ -5,7 +5,7 @@ OC = $(CROSS_COMPILE)objcopy
 SZ = $(CROSS_COMPILE)size
 
 elf-gas:
-	$(CC) -T link.ld -static -march=rv32ec_zicsr_zifencei -mabi=ilp32e -nostdlib -nostartfiles -ggdb FORTH.S -o FORTH.elf
+	$(CC) -T link.ld -static -march=rv32emc_zicsr_zifencei -mabi=ilp32e -nostdlib -nostartfiles -ggdb FORTH.S -o FORTH.elf
 	$(OD) -d FORTH.elf > FORTH.dis
 	$(OC) -O ihex FORTH.elf FORTH.hex
 	$(SZ) FORTH.elf

@@ -266,6 +266,13 @@
 	ret
 	ENDW RSHIFT
 
+	DFW MULTI, "*"
+	lw x14, 0(x9)
+	addi x9, x9, 4
+	mul x15, x15, x14
+	ret
+	ENDW MULTI
+
 	DFW SWMULTI, "SW*"
 	# FROM LIBGCC
 	mv x14, x15
