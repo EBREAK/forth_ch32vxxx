@@ -327,6 +327,13 @@
 	ret
 	ENDW 8DIVID
 
+	DFW MOD, "MOD"
+	lw x14, 0(x9)
+	addi x9, x9, 4
+	rem x15, x14, x15
+	ret
+	ENDW MOD
+
 	DFW XOR, "XOR"
 	PPOP x14
 	xor x15, x14, x15
