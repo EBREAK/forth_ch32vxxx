@@ -305,6 +305,13 @@
 	ret
 	ENDW 8MULTI
 
+	DFW DIVID, "/"
+	lw x14, 0(x9)
+	addi x9, x9, 4
+	div x15, x14, x15
+	ret
+	ENDW DIVID
+
 	DFW 2DIVID, "2/"
 	srli x15, x15, 1
 	ret
