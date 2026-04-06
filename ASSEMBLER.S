@@ -902,7 +902,8 @@
 	ENDW ASM_BNEZ
 
 	DFW ASM_BGT, "BGT,"
-	# ( OFFSET RA RB -- )
+	# RB > RT
+	# ( OFFSET RB RT -- )
 	RPUSH x1
 	LIT 0X4063; NC W_ASM_B_TYPE; NC W_LCOMMA;
 	RPOP x1
@@ -910,7 +911,8 @@
 	ENDW ASM_BGT
 
 	DFW ASM_BLT, "BLT,"
-	# ( OFFSET RA RB -- )
+	# RB < RT
+	# ( OFFSET RB RT -- )
 	RPUSH x1
 	NC W_SWAP;
 	RPOP x1
