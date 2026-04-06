@@ -792,6 +792,14 @@
 	ret
 	ENDW ASM_SH
 
+	DFW ASM_SB, "SB,"
+	# ( OFFSET SRC BASE -- )
+	RPUSH x1
+	LIT 0x23; NC W_ASM_S_TYPE; NC W_LCOMMA;
+	RPOP x1
+	ret
+	ENDW ASM_SB
+
 	DFW ASM_CLW, "C.LW,"
 	# ( UOFFSET BASE RD -- )
 	RPUSH x1
