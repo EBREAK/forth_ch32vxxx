@@ -893,6 +893,14 @@
 	ret
 	ENDW ASM_BNE
 
+	DFW ASM_BNEZ, "BNEZ,"
+	# ( OFFSET RS -- )
+	RPUSH x1
+	NC W_0X0; NC W_ASM_BNE;
+	RPOP x1
+	ret
+	ENDW ASM_BNEZ
+
 	DFW ASM_RPUSH, "RPUSH,"
 	# ( REG -- )
 	RPUSH x1
