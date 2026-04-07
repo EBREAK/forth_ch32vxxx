@@ -4,7 +4,9 @@
 	.ENDM
 
 	.MACRO FC sym
-		call \sym
+		lui x1, %hi(\sym)
+		jalr x1, %lo(\sym)(x1)
+		#call \sym
 	.ENDM
 
 	.MACRO NT sym
