@@ -24,7 +24,7 @@
 	sw x11, R32_UART_CTLR1(x10)
 	li x11, UART_RTSE
 	sw x11, R32_UART_CTLR3(x10)
-	li x11, ((0x34 << 0x4) | (0x1 << 0x0))
+	li x11, ((0x4 << 0x4) | (0x5 << 0x0))
 	sw x11, R32_UART_BRR(x10)
 	ret
 	ENDW EARLY_UART_INIT
