@@ -11,3 +11,9 @@
 	csrr x15, mtvec
 	ret
 	ENDW MTVECLOAD
+
+	DFW FENCE_IORW_IORW, "FENCE-IORW-IORW"
+	# ( -- )
+	fence iorw, iorw
+	ret
+	ENDW FENCE_IORW_IORW
